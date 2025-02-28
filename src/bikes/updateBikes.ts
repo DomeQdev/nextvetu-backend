@@ -5,56 +5,58 @@ import { lt, sql } from "drizzle-orm";
 const db = useDB();
 
 export default async () => {
-    await Promise.all([
-        db.delete(bikeTable).where(lt(bikeTable.last_seen, new Date(Date.now() - 2.5 * 60 * 60 * 1000))),
-        db.delete(placeTable).where(lt(placeTable.last_seen, new Date(Date.now() - 2.5 * 60 * 60 * 1000))),
-    ]);
+    await db.delete(bikeTable).where(lt(bikeTable.last_seen, new Date(Date.now() - 2.5 * 60 * 60 * 1000)));
+    await db.delete(placeTable).where(lt(placeTable.last_seen, new Date(Date.now() - 2.5 * 60 * 60 * 1000)));
 
     const [previousBikes, liveData] = await Promise.all([db.query.bikeTable.findMany({}), getLiveData()]);
 
     if (!liveData) return;
 
     if (liveData.places.length) {
-        await db
-            .insert(placeTable)
-            .values(
-                liveData.places.map((place) => ({
-                    id: place.uid,
-                    location: [place.lng, place.lat] as [number, number],
-                    name: place.name,
-                    number: place.number,
-                    last_seen: new Date(),
-                }))
-            )
-            .onConflictDoUpdate({
-                target: [placeTable.id],
-                set: {
-                    last_seen: new Date(),
-                },
-            });
+        await batchProcess(liveData.places, async (placeBatch) => {
+            await db
+                .insert(placeTable)
+                .values(
+                    placeBatch.map((place) => ({
+                        id: place.uid,
+                        location: [place.lng, place.lat] as [number, number],
+                        name: place.name,
+                        number: place.number,
+                        last_seen: new Date(),
+                    }))
+                )
+                .onConflictDoUpdate({
+                    target: [placeTable.id],
+                    set: {
+                        last_seen: new Date(),
+                    },
+                });
+        });
     }
 
     if (liveData.bikes.length) {
-        await db
-            .insert(bikeTable)
-            .values(
-                liveData.bikes.map((bike) => ({
-                    id: String(bike.boardcomputer),
-                    number: bike.number,
-                    type: bike.bike_type,
-                    battery: bike.pedelec_battery,
-                    place: bike.place_id,
-                    last_seen: new Date(),
-                }))
-            )
-            .onConflictDoUpdate({
-                target: [bikeTable.id],
-                set: {
-                    battery: sql`excluded.battery`,
-                    place: sql`excluded.place`,
-                    last_seen: new Date(),
-                },
-            });
+        await batchProcess(liveData.bikes, async (bikeBatch) => {
+            await db
+                .insert(bikeTable)
+                .values(
+                    bikeBatch.map((bike) => ({
+                        id: String(bike.boardcomputer),
+                        number: bike.number,
+                        type: bike.bike_type,
+                        battery: bike.pedelec_battery,
+                        place: bike.place_id,
+                        last_seen: new Date(),
+                    }))
+                )
+                .onConflictDoUpdate({
+                    target: [bikeTable.id],
+                    set: {
+                        battery: sql`excluded.battery`,
+                        place: sql`excluded.place`,
+                        last_seen: new Date(),
+                    },
+                });
+        });
     }
 
     const previousBikesMap = new Map(previousBikes.map((bike) => [bike.id, bike]));
@@ -79,12 +81,23 @@ export default async () => {
             end_name: endPlace.name,
             start: previousBike.last_seen,
             end: new Date(),
-            batteryStart: previousBike.battery,
-            batteryEnd: bike.pedelec_battery,
+            battery_start: previousBike.battery,
+            battery_end: bike.pedelec_battery,
         });
     }
 
     if (rentals.length) {
-        await db.insert(rentalTable).values(rentals);
+        await batchProcess(rentals, async (rentalBatch) => {
+            await db.insert(rentalTable).values(rentalBatch);
+        });
     }
 };
+
+const batchSize = 500;
+
+async function batchProcess<T>(items: T[], processFn: (batch: T[]) => Promise<void>): Promise<void> {
+    for (let i = 0; i < items.length; i += batchSize) {
+        const batch = items.slice(i, i + batchSize);
+        await processFn(batch);
+    }
+}

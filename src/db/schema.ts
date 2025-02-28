@@ -57,8 +57,8 @@ export const rentalTable = pgTable(
         end_name: text().notNull(),
         start: timestamp({ withTimezone: true }).notNull(),
         end: timestamp({ withTimezone: true }).notNull(),
-        batteryStart: integer(),
-        batteryEnd: integer(),
+        battery_start: integer(),
+        battery_end: integer(),
     },
     (table) => [
         primaryKey({ columns: [table.id] }),
