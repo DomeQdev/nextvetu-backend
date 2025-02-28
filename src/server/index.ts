@@ -1,14 +1,12 @@
 import fastify from "fastify";
 
 import getBikeHistory from "./endpoints/getBikeHistory";
-import getLiveBikes from "./endpoints/getLiveBikes";
-import getStations from "./endpoints/getStations";
+import getFeatures from "./endpoints/getFeatures";
 
 const app = fastify();
 
 app.get("/getBikeHistory", getBikeHistory);
-app.get("/getLiveBikes", getLiveBikes);
-app.get("/getStations", getStations);
+app.get("/getFeatures", getFeatures);
 
 app.listen({ port: 7423 }).then(() => {
     console.log("Server is running on port 7423");

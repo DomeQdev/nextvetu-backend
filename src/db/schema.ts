@@ -39,7 +39,7 @@ export const bikeTable = pgTable(
     (table) => [
         primaryKey({ columns: [table.id] }),
         index("bikePlaceIndex").on(table.place),
-        index("bikeNumberIndex").on(table.type),
+        index("bikeTypeIndex").on(table.type),
         index("bikeLastSeenIndex").on(table.last_seen),
         foreignKey({ columns: [table.place], foreignColumns: [placeTable.id] }),
     ]
