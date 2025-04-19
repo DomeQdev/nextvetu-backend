@@ -10,6 +10,10 @@ const getGbfsIndex: RouteHandlerMethod = async () => {
             pl: {
                 feeds: [
                     {
+                        name: "system_information",
+                        url: `${baseUrl}/system_information.json`,
+                    },
+                    {
                         name: "station_information",
                         url: `${baseUrl}/station_information.json`,
                     },

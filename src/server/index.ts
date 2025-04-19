@@ -11,6 +11,7 @@ import getRouteRentals from "./endpoints/getRouteRentals";
 import getStationHistory from "./endpoints/getStationHistory";
 
 import getGbfsIndex from "./endpoints/gbfs/index";
+import getSystemInformation from "./endpoints/gbfs/systemInformation";
 import getStationInformation from "./endpoints/gbfs/stationInformation";
 import getStationStatus from "./endpoints/gbfs/stationStatus";
 import getFreeBikeStatus from "./endpoints/gbfs/freeBikeStatus";
@@ -27,6 +28,7 @@ app.get("/getRouteRentals", getRouteRentals);
 app.get("/getStationHistory", getStationHistory);
 
 app.get("/gbfs/gbfs.json", getGbfsIndex);
+app.get("/gbfs/system_information.json", getSystemInformation);
 app.get("/gbfs/station_information.json", getStationInformation);
 app.get("/gbfs/station_status.json", getStationStatus);
 app.get("/gbfs/free_bike_status.json", getFreeBikeStatus);

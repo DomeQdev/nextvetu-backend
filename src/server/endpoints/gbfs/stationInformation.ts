@@ -19,7 +19,6 @@ const getStationInformation: RouteHandlerMethod = async (req, res) => {
                 short_name: String(place.number),
                 lon: place.location[0],
                 lat: place.location[1],
-                capacity: 1000,
             })),
         },
     };

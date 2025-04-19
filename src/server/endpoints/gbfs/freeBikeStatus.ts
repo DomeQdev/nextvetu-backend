@@ -22,8 +22,8 @@ const getFreeBikeStatus: RouteHandlerMethod = async () => {
                 bike_id: bike.number,
                 lon: bike.location[0],
                 lat: bike.location[1],
-                is_reserved: false,
-                is_disabled: false,
+                is_reserved: 0,
+                is_disabled: 0,
             })),
         },
     };
