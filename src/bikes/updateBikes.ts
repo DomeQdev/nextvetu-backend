@@ -35,7 +35,16 @@ export default async () => {
     }
 
     if (liveData.bikes.length) {
-        await batchProcess(liveData.bikes, async (bikeBatch) => {
+        const uniqueBikes = new Map();
+
+        for (const bike of liveData.bikes) {
+            if (bike.boardcomputer === 0) continue;
+            const bikeId = String(bike.boardcomputer);
+
+            uniqueBikes.set(bikeId, bike);
+        }
+
+        await batchProcess(Array.from(uniqueBikes.values()), async (bikeBatch) => {
             await db
                 .insert(bikeTable)
                 .values(
@@ -64,6 +73,8 @@ export default async () => {
     const rentals: Rental[] = [];
 
     for (const bike of liveData.bikes) {
+        if (bike.boardcomputer === 0) continue;
+
         const previousBike = previousBikesMap.get(String(bike.boardcomputer));
         if (!previousBike || previousBike.place === bike.place_id) continue;
 

@@ -16,7 +16,7 @@ export const placeTable = pgTable(
         id: integer().notNull(),
         location: geometry({ type: "point", mode: "tuple", srid: 4326 }).notNull(),
         name: text().notNull(),
-        number: integer().notNull(),
+        number: integer().notNull(), // 0 if freestanding bike
         last_seen: timestamp({ withTimezone: true }).notNull(),
     },
     (table) => [
