@@ -20,7 +20,7 @@ export default async () => {
                     placeBatch.map((place) => ({
                         id: place.uid,
                         location: [place.lng, place.lat] as [number, number],
-                        name: place.name,
+                        name: place.name.trim(),
                         number: place.number,
                         last_seen: new Date(),
                     }))
@@ -28,6 +28,7 @@ export default async () => {
                 .onConflictDoUpdate({
                     target: [placeTable.id],
                     set: {
+                        name: sql`excluded.name`,
                         last_seen: new Date(),
                     },
                 });

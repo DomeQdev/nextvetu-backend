@@ -15,10 +15,11 @@ const getStationInformation: RouteHandlerMethod = async (req, res) => {
         data: {
             stations: stations.map((place) => ({
                 station_id: String(place.id),
-                name: place.name,
+                name: `${place.number};${place.name}`,
                 short_name: String(place.number),
                 lon: place.location[0],
                 lat: place.location[1],
+                capacity: 1000,
             })),
         },
     };
