@@ -13,7 +13,7 @@ const getStation: RouteHandlerMethod = async (req, res) => {
         columns: {
             name: true,
             number: true,
-            location: true
+            location: true,
         },
         with: {
             bikes: {
@@ -47,7 +47,7 @@ const getStation: RouteHandlerMethod = async (req, res) => {
         },
     });
 
-    const bikeRentals = new Map<string, (typeof rentals)>();
+    const bikeRentals = new Map<string, typeof rentals>();
     for (const rental of rentals) {
         if (!bikeRentals.has(rental.bike)) bikeRentals.set(rental.bike, []);
         bikeRentals.get(rental.bike)?.push(rental);
@@ -59,11 +59,18 @@ const getStation: RouteHandlerMethod = async (req, res) => {
         location: station.location,
         bikes: station.bikes.map((bike) => ({
             number: bike.number,
-            battery: bike.battery,
+            battery: bike.battery ?? undefined,
             type: bike.type,
-            rentals: bikeRentals.get(bike.number) || [],
+            rentals: (bikeRentals.get(bike.number) || []).map((rental) => ({
+                start: rental.start.getTime(),
+                start_name: rental.start_name,
+                battery_start: rental.battery_start ?? undefined,
+                end: rental.end.getTime(),
+                end_name: rental.end_name,
+                battery_end: rental.battery_end ?? undefined,
+            })),
         })),
-    }
+    };
 };
 
 export default getStation;
