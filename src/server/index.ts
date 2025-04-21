@@ -8,6 +8,7 @@ import getMostPopularBikes from "./endpoints/getMostPopularBikes";
 import getMostPopularRoutes from "./endpoints/getMostPopularRoutes";
 import getMostPopularStations from "./endpoints/getMostPopularStations";
 import getRouteRentals from "./endpoints/getRouteRentals";
+import getStation from "./endpoints/getStation";
 import getStationHistory from "./endpoints/getStationHistory";
 
 import getGbfsIndex from "./endpoints/gbfs/index";
@@ -25,6 +26,7 @@ app.get("/getMostPopularBikes", getMostPopularBikes);
 app.get("/getMostPopularRoutes", getMostPopularRoutes);
 app.get("/getMostPopularStations", getMostPopularStations);
 app.get("/getRouteRentals", getRouteRentals);
+app.get("/getStation", getStation);
 app.get("/getStationHistory", getStationHistory);
 
 app.get("/gbfs/gbfs.json", getGbfsIndex);
