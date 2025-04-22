@@ -1,5 +1,5 @@
 import { bikeTable, placeTable, rentalTable, useDB } from "@/db";
-import { and, eq, gte, inArray, lte } from "drizzle-orm";
+import { and, eq, gte, inArray } from "drizzle-orm";
 import { RouteHandlerMethod } from "fastify";
 
 const db = useDB();
@@ -17,7 +17,7 @@ const getStation: RouteHandlerMethod = async (req, res) => {
         },
         with: {
             bikes: {
-                where: lte(bikeTable.last_seen, new Date(Date.now() - 2 * 60 * 1000)),
+                where: gte(bikeTable.last_seen, new Date(Date.now() - 2 * 60 * 1000)),
                 columns: {
                     number: true,
                     battery: true,
