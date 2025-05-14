@@ -2,6 +2,7 @@ import fastify from "fastify";
 import fastifyCors from "@fastify/cors";
 
 import getBikeHistory from "./endpoints/getBikeHistory";
+import getBikeMovements from "./endpoints/getBikeMovements";
 import getFeatures from "./endpoints/getFeatures";
 import getLastRentals from "./endpoints/getLastRentals";
 import getMostPopularBikes from "./endpoints/getMostPopularBikes";
@@ -20,6 +21,7 @@ import getFreeBikeStatus from "./endpoints/gbfs/freeBikeStatus";
 const app = fastify();
 
 app.get("/getBikeHistory", getBikeHistory);
+app.get("/getBikeMovements", getBikeMovements);
 app.get("/getFeatures", getFeatures);
 app.get("/getLastRentals", getLastRentals);
 app.get("/getMostPopularBikes", getMostPopularBikes);
