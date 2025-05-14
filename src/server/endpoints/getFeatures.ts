@@ -3,7 +3,9 @@ import { RouteHandlerMethod } from "fastify";
 
 const getFeatures: RouteHandlerMethod = async (req, res) => {
     if (!req.query.bounds) return res.code(400).send({ error: "Missing bounds query parameter" });
+
     const bounds = req.query.bounds.split(",");
+    if (bounds.length !== 4) return res.code(400).send({ error: "Invalid bounds format" });
 
     const places = await dbSelect<Place>(
         `SELECT id, name, place_number, location

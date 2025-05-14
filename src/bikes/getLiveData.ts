@@ -56,7 +56,6 @@ type Place = {
     uid: number;
     lat: number;
     lng: number;
-    bike: boolean;
     name: string;
     number: number;
 };
