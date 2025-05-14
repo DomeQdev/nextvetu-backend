@@ -1,8 +1,5 @@
-import { rentalTable, useDB } from "@/db";
-import { desc, eq, or } from "drizzle-orm";
+import { dbSelect } from "@/db";
 import { RouteHandlerMethod } from "fastify";
-
-const db = useDB();
 
 const getStationHistory: RouteHandlerMethod = async (req, res) => {
     const station = req.query.station;
@@ -11,11 +8,14 @@ const getStationHistory: RouteHandlerMethod = async (req, res) => {
     if (!station) return res.code(400).send({ error: "Missing station query parameter" });
     if (limit > 1000) return res.code(400).send({ error: "Limit cannot exceed 1000" });
 
-    return db.query.rentalTable.findMany({
-        where: or(eq(rentalTable.start_name, station), eq(rentalTable.end_name, station)),
-        orderBy: desc(rentalTable.start),
-        limit,
-    });
+    return dbSelect(
+        `SELECT *
+        FROM rentals
+        WHERE start_name = {station:String} OR end_name = {station:String}
+        ORDER BY start_time DESC
+        LIMIT {limit:UInt32}`,
+        { station, limit }
+    );
 };
 
 export default getStationHistory;
