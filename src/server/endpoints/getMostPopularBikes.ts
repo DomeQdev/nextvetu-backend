@@ -1,8 +1,5 @@
-import { rentalTable, useDB } from "@/db";
-import { desc, inArray, sql } from "drizzle-orm";
+import { dbSelect } from "@/db";
 import { RouteHandlerMethod } from "fastify";
-
-const db = useDB();
 
 const getMostPopularBikes: RouteHandlerMethod = async (req, res) => {
     const bikeTypes = req.query.bikeTypes?.split(",").map(Number);
@@ -10,23 +7,21 @@ const getMostPopularBikes: RouteHandlerMethod = async (req, res) => {
 
     if (limit > 200) return res.code(400).send({ error: "Limit cannot exceed 200" });
 
-    const results = await db
-        .select({
-            bike_number: rentalTable.bike,
-            bike_type: rentalTable.bike_type,
-            rental_count: sql<number>`count(${rentalTable.id})`.as("rental_count"),
-        })
-        .from(rentalTable)
-        .where(bikeTypes ? inArray(rentalTable.bike_type, bikeTypes) : undefined)
-        .groupBy(rentalTable.bike, rentalTable.bike_type)
-        .orderBy(desc(sql<number>`count(${rentalTable.id})`))
-        .limit(limit);
-
-    return results.map((bike) => ({
-        bike: bike.bike_number,
-        type: bike.bike_type,
-        rentals: bike.rental_count,
-    }));
+    return dbSelect(
+        `SELECT
+            bike_number as bike,
+            bike_type as type,
+            COUNT(*) AS rentals
+        FROM rentals
+        ${bikeTypes ? "WHERE bike_type IN {bikeTypes:UInt32}" : ""}
+        GROUP BY
+            bike_number,
+            bike_type
+        ORDER BY
+            rentals DESC
+        LIMIT {limit:UInt32}`,
+        { bikeTypes, limit }
+    );
 };
 
 export default getMostPopularBikes;
