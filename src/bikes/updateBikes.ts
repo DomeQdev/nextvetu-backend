@@ -77,8 +77,4 @@ export default async () => {
     if (rentals.length) {
         await dbInsert<Rental>("rentals", rentals);
     }
-
-    console.log(
-        `Updated ${liveData.bikes.length} bikes and ${liveData.places.length} places, and inserted ${rentals.length} rentals.`
-    );
 };

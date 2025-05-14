@@ -33,14 +33,14 @@ const getMostPopularStations: RouteHandlerMethod = async (req, res) => {
                 start_name != end_name
                 ${bikeTypes ? "AND bike_type IN {bikeTypes:UInt32}" : ""}
         )
-                
+
         SELECT
             station_name AS name,
             SUM(rental_event) AS rentals,
             SUM(return_event) AS returns,
             SUM(rental_event + return_event) AS totalOperations
         FROM StationActivity
-        WHERE station_name IS NOT NULL AND station_name != '' -- Zapobiega grupowaniu pustych nazw stacji
+        WHERE station_name IS NOT NULL AND station_name != ''
         GROUP BY station_name
         ORDER BY totalOperations DESC
         LIMIT {limit:UInt32}`,

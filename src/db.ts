@@ -110,7 +110,7 @@ export const dbSelect = async <T>(query: string, query_params?: Record<string, a
         })
         .then((res) => res.json<T>())
         .then(({ data }) => data)
-        // .catch(() => []);
+        .catch(() => []);
 };
 
 export const dbInsert = async <T>(table: string, values: T[]) => {
