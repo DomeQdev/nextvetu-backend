@@ -24,8 +24,8 @@ const getStationStatus: RouteHandlerMethod = async () => {
         data: {
             stations: stations.map((place) => ({
                 station_id: String(place.id),
-                num_bikes_available: place.bikes,
-                num_docks_available: 1000 - place.bikes,
+                num_bikes_available: +place.bikes,
+                num_docks_available: 1000 - +place.bikes,
                 is_installed: 1,
                 is_renting: 1,
                 is_returning: 1,
